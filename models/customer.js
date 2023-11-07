@@ -45,23 +45,26 @@ const customerSchema = new Schema(
       minLength: [8, "Password: must be at least 8 characters"],
       maxLength: [20, "Password: cannot exceed 20 characters"],
     },
+    avatarId: {
+      type: Schema.Types.ObjectId,
+      ref: "medias",
+      default: null,
+    },
     birthday: {
       type: Date
     },
 
     phoneNumber: {
       type: String,
-      maxLength: [20, "Phone number: cannot exceed 20 characters"],
       validate: {
-        // Xác thực số điện thoại
         validator: function (value) {
-          const phoneRegex =
-            /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
+          // Xác thực số điện thoại
+          const phoneRegex = /^(0[0-9]|84[0-9])\s?\d{8,9}$/;
           return phoneRegex.test(value);
         },
-        message: "Phone number: is not a valid phone number!",
+        message: "Phone number: is not a valid phone number.",
       },
-      unique: [true, "Email: must be unique"],
+      unique: [true, " Phone number must be unique"],
     },
     provinceCode: {
       type: Number
@@ -104,17 +107,17 @@ const customerSchema = new Schema(
   }
 );
 
-// Virtual with cart
-customerSchema.virtual("cart", {
-  ref: "carts",
-  localField: "_id",
-  foreignField: "customerId",
+// Virtual with Populate
+customerSchema.virtual("media", {
+  ref: "medias",
+  localField: "avatarId",
+  foreignField: "_id",
   justOne: true,
 });
 
 // Tạo trường ảo fullName
 customerSchema.virtual("fullName").get(function () {
-  return `${this.firstName} ${this.lastName}`;
+  return `${this.lastName} ${this.firstName}`;
 });
 
 // Build mã hóa field

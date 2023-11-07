@@ -122,9 +122,10 @@ module.exports = {
       }
 
       let resultsProductList = [];
-
+      console.log('««««« productList »»»»»', productList);
       //Thực hiện kiểm tra sản phẩm có tồn tại và match với sản phẩm front end truyền lên
       await asyncForEach(productList, async (item) => {
+        console.log('««««« item »»»»»', item);
         const product = await Product.findOne({
           _id: item.productId,
           isDeleted: false,

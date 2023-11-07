@@ -47,7 +47,11 @@ module.exports = {
 
   // Function thực thi loop giá trị thay vì map và forEach thì fuzzySearch loại bỏ giá trị trả về array và xác định index trả về theo thứ tự 
   asyncForEach: async (array, callback) => {
+    console.log('««««« array »»»»»', array);
+    console.log('««««« callback »»»»»', callback);
     for (let index = 0; index < array.length; index += 1) {
+      //callBack function được gọi lại mỗi lần theo số index và trả đối số về theo index
+      //Note: tại nơi gọi function asyncForEach sẽ nhận đối số trước và function callback sẽ loop lần lược
       await callback(array[index], index, array);
     }
   },

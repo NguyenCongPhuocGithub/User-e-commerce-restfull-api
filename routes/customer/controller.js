@@ -10,7 +10,8 @@ module.exports = {
       let result = await Customer.findOne({
         _id: id,
         isDeleted: false,
-      }).select('-password');
+      }).select('-password')
+      .populate("media");
 
       if (result) {
         return res

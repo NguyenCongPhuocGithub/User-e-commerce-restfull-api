@@ -46,6 +46,7 @@ module.exports = {
         address,
         updatedAt,
       });
+      
       const refreshToken = generateRefreshToken(_id);
 
       return res.status(200).json({
@@ -93,6 +94,7 @@ module.exports = {
         phoneNumber,
         password,
         birthday,
+        avatarId: null,
       });
 
       let result = await newCustomer.save();

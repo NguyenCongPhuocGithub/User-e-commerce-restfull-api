@@ -19,7 +19,7 @@ const filtersRouter = require('./routes/filter/router');
 //import CONNECTION_STRING, DB_NAME
 const { CONNECTION_STRING, DB_NAME } = require('./constants/db');
 // import authenticate
-const{passportVerifyToken, passportVerifyAccount, passportConfigBasic} = require('./middlewares/passport');
+const {passportVerifyToken, passportVerifyAccount, passportConfigBasic} = require('./middlewares/passport');
 
 var app = express();
 

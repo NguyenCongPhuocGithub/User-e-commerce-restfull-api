@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 const mongooseLeanVirtuals = require("mongoose-lean-virtuals");
 const bcrypt = require("bcryptjs");
+const { string } = require("yup");
 
 // Xác định bảng nhân viên với các trường khác nhau và quy tắc xác thực của chúng.
 const employeeSchema = new Schema(
@@ -46,33 +47,33 @@ const employeeSchema = new Schema(
       maxLength: [20, "Password: cannot exceed 20 characters"],
     },
     birthday: {
-      type: Date,
+      type: String,
     },
     phoneNumber: {
       type: String,
-      maxLength: [20, "Phone number: cannot exceed 20 characters"],
       validate: {
-        // Xác thực số điện thoại
         validator: function (value) {
-          const phoneRegex =
-            /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
+          // Xác thực số điện thoại
+          const phoneRegex = /^(0[0-9]|84[0-9])\s?\d{8,9}$/;
           return phoneRegex.test(value);
         },
-        message: `Phone number: is not a valid phone number!`,
+        message: "Phone number: is not a valid phone number.",
       },
-      unique: [true, "Address: must be unique"],
+      unique: [true, " Phone number must be unique"],
+    },
+    avatarId: {
+      type: Schema.Types.ObjectId,
+      ref: "medias",
+      default: null,
     },
     address: {
       type: String,
       maxLength: [500, "Address: cannot exceed 500 characters"],
     },
     typeRole: {
+      required: [true, "typeRole: cannot be empty"],
       type: String,
-      enum: [
-        "EMPLOYEE",
-        "SHIPPER",
-      ],
-      default: "EMPLOYEE",
+      enum: ["MANAGE", "SALES", "SHIPPER"],
     },
     isDeleted: {
       type: Boolean,
@@ -88,34 +89,40 @@ const employeeSchema = new Schema(
 
 // Tạo trường ảo fullName
 employeeSchema.virtual("fullName").get(function () {
-  return `${this.firstName} ${this.lastName}`;
+  return `${this.lastName} ${this.firstName}`;
+});
+// Virtual with Populate
+employeeSchema.virtual("media", {
+  ref: "medias",
+  localField: "avatarId",
+  foreignField: "_id",
+  justOne: true,
 });
 
 // Build mã hóa field
 employeeSchema.pre("save", async function (next) {
   // Lưu hashPass thay cho việc lưu password
-    this.password = await hashPassword(this.password);
-    next();
-  });
-  
-  employeeSchema.pre("findOneAndUpdate", async function (next) {
+  this.password = await hashPassword(this.password);
+  next();
+});
+
+employeeSchema.pre("findOneAndUpdate", async function (next) {
   // Lưu hashPass thay cho việc lưu password
-    if (this._update.password) {
-      this._update.password = await hashPassword(this._update.password);
-    }
-    next();
-  });
-  
-  // hash mật khẩu trước khi lưu vào cơ sở dữ liệu.
-  async function hashPassword(value) {
-    if (value) {
-      const salt = await bcrypt.genSalt(10); // 10 kí tự: ABCDEFGHIK + 123456
-      const hashedPassword = await bcrypt.hash(value, salt);
-  
-      return hashedPassword;
-  
-    }
+  if (this._update.password) {
+    this._update.password = await hashPassword(this._update.password);
   }
+  next();
+});
+
+// hash mật khẩu trước khi lưu vào cơ sở dữ liệu.
+async function hashPassword(value) {
+  if (value) {
+    const salt = await bcrypt.genSalt(10); // 10 kí tự: ABCDEFGHIK + 123456
+    const hashedPassword = await bcrypt.hash(value, salt);
+
+    return hashedPassword;
+  }
+}
 // End mã hóa field
 
 // Kiểm tra mật khẩu có hợp lệ hay không

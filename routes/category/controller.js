@@ -4,7 +4,7 @@ const { Category } = require("../../models");
 module.exports = {
   getAll: async (req, res, next) => {
     try {
-      const results = await Category.find({ isDeleted: false });
+      const results = await Category.find({ isDeleted: false }).populate("media").sort({ name: 1 });
 
       if(results){
         return res
@@ -35,7 +35,8 @@ module.exports = {
       let results = await Category.find(conditionFind)
         .skip(skip)
         .limit(limit)
-        .sort({ name: 1 });
+        .sort({ name: 1 })
+        .populate("media");
 
       const total = await Category.countDocuments(conditionFind);
 
@@ -64,7 +65,7 @@ module.exports = {
       let result = await Category.findOne({
         _id: id,
         isDeleted: false,
-      });
+      }).populate("media");
 
       if (result) {
         return res.status(200).json({ message:"Get detail information of category successfully", payload: result });
@@ -85,7 +86,7 @@ module.exports = {
 
       if (name) conditionFind.name = fuzzySearch(name);
 
-      const result = await Category.find(conditionFind);
+      const result = await Category.find(conditionFind).populate("media");
 
       const total = await Category.countDocuments(conditionFind);
 

@@ -15,8 +15,9 @@ const categorySchema = new Schema(
       maxLength: [500, "Category description: cannot exceed 500 characters"],
       default: null,
     },
-    CoverImageUrl: {
-      type: String,
+    imageId: {
+      type: Schema.Types.ObjectId,
+      ref: "medias",
       default: null,
     },
     isDeleted: {
@@ -30,6 +31,18 @@ const categorySchema = new Schema(
     timestamps: true, // Tự động thêm trường createdAt và updatedAt
   }
 );
+// Tạo trường ảo "media" để tham chiếu đến hình ảnh sản phẩm
+categorySchema.virtual("media", {
+  ref: "medias", // Tên model data tham chiếu
+  localField: "imageId", // Field trong data hiện tại đem đi tham chiếu
+  foreignField: "_id", // Field tham chiếu trong data tham chiếu
+  justOne: true, // Mỗi sản phẩm chỉ thuộc về một danh mục
+});
+
+// Virtuals in console.log()
+categorySchema.set("toObject", { virtuals: true });
+// Virtuals in JSON
+categorySchema.set("toJSON", { virtuals: true });
 
 // Tạo bảng danh mục dựa trên lược đồ đã khai báo
 const Category = model("categories", categorySchema);
