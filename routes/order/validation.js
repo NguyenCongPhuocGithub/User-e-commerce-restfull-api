@@ -2,7 +2,7 @@ const yup = require("yup");
 const ObjectId = require("mongodb").ObjectId;
 
 const updateStatusSchema = yup.object({
-  body: yup.object({
+  query: yup.object({
     status: yup
       .string()
       .required("status: cannot be empty ")

@@ -51,7 +51,7 @@ const customerSchema = new Schema(
       default: null,
     },
     birthday: {
-      type: Date
+      type: Date,
     },
 
     phoneNumber: {

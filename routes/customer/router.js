@@ -10,7 +10,7 @@ router.route('/')
   .get(getDetail)
   .patch(validateSchema(customerSchema), update)
 
-router.route('/changPassword')
+router.route('/changePassword')
   .patch(validateSchema(changePasswordSchema), changePassword)
 
 router.route('/delete')

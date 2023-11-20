@@ -69,6 +69,7 @@ module.exports = {
       const results = await Product.find(conditionFind)
         .populate("category")
         .populate("supplier")
+        .populate("media")
         .skip(skip)
         .limit(limit)
         .sort(arrange);

@@ -9,12 +9,18 @@ const productSchema = new Schema(
       ref: "products",
       required: [true, "Product Id: cannot be blank"],
     },
+    name: { type: Schema.Types.String, required: [true, "Name: cannot be blank"]},
     quantity: {
       type: Number,
       required: [true, "Quantity: cannot be blank"],
       min: 1,
       default: 1,
     },
+    orderDiscount: {
+      type: Number,
+      default: 0,
+    },
+    imageProduct: {type: Schema.Types.String},
     price: { type: Number },
     discount: { type: Number },
     weight: {type: Number },

@@ -6,14 +6,13 @@ const customerSchema = yup.object({
       .string()
       .required("firstName: cannot be blank")
       .max(50, "firstName: cannot exceed 50 characters"),
-      
+
     lastName: yup
       .string()
       .required("lastName: cannot be blank")
       .max(50, "lastName: cannot exceed 50 characters"),
 
-    birthday: yup
-      .date(),
+    birthday: yup.date(),
 
     phoneNumber: yup
       .string()
@@ -29,48 +28,44 @@ const customerSchema = yup.object({
         }
       ),
 
-    provinceCode: yup
-    .number(),
+    provinceCode: yup.number(),
 
     provinceName: yup
-    .string()
-    .max(50, "provinceName: cannot exceed 50 characters"),
+      .string()
+      .max(50, "provinceName: cannot exceed 50 characters"),
 
-    districtCode: yup
-    .number(),
+    districtCode: yup.number(),
 
     districtName: yup
-    .string()
-    .max(50, "districtName: cannot exceed 50 characters"),
-
-    wardCode: yup
-    .string()
-    .max(500, "wardCode: cannot exceed 50 characters"),
-
-    wardName: yup
-    .string()
-    .max(500, "wardName: cannot exceed 50 characters"),
-    
-    address: yup
       .string()
-      .max(500, "address: cannot exceed 500 characters"),
+      .max(50, "districtName: cannot exceed 50 characters"),
+
+    wardCode: yup.string().max(500, "wardCode: cannot exceed 50 characters"),
+
+    wardName: yup.string().max(500, "wardName: cannot exceed 50 characters"),
+
+    address: yup.string().max(500, "address: cannot exceed 500 characters"),
   }),
 });
 
 const changePasswordSchema = yup.object({
   body: yup.object({
-      // email: yup
-      // .string()
-      // .required("email: cannot be blank")
-      // .test("email type", "email: is not a valid email!", (value) => {
-      //   const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-      //   return emailRegex.test(value);
-      // }),
-
-    password: yup
+    passwordOld: yup
       .string()
-      .required("password: cannot be blank")
-      .test("password type", "password: is not a valid password!", (value) => {
+      .required("passwordOld: cannot be blank")
+      .test("passwordOld type", "password: is not a valid password!", (value) => {
+        const passwordRegex =
+          /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+        return passwordRegex.test(value);
+      })
+      .min(8)
+      .max(20),
+
+    newPassword: yup
+      .string()
+      .required("newPassword: cannot be blank")
+      .test("newPassword type", "password: is not a valid password!", (value) => {
         const passwordRegex =
           /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
@@ -80,16 +75,20 @@ const changePasswordSchema = yup.object({
       .max(20),
 
     confirmPassword: yup
-    .string()
-    .required("confirmPassword: cannot be blank")
-    .test("confirmPassword type", "confirmPassword: is not a valid password!", (value) => {
-      const passwordRegex =
-        /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+      .string()
+      .required("confirmPassword: cannot be blank")
+      .test(
+        "confirmPassword type",
+        "confirmPassword: is not a valid password!",
+        (value) => {
+          const passwordRegex =
+            /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
-      return passwordRegex.test(value);
-    })
-    .min(8)
-    .max(20),
+          return passwordRegex.test(value);
+        }
+      )
+      .min(8)
+      .max(20),
   }),
 });
 

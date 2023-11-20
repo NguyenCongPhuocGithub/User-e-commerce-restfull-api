@@ -15,6 +15,49 @@ const cartDetailSchema = new Schema(
       min: 1,
       default: 1,
     },
+
+    name: {
+      type: String,
+      required: [true, "Product name: cannot be blank"],
+      maxLength: [100, "Product names: cannot exceed 100 characters"],
+    },
+
+    price: {
+      type: Number,
+      required: [true, "Product price: cannot be blank"],
+      min: [0, "The price: of the product cannot be less than 0"],
+      default: 0,
+    },
+
+    discount: {
+      type: Number,
+      min: [0, "Discount: cannot be less than 0"],
+      max: [75, "Discount: cannot be greater than 75"],
+      default: 0,
+    },
+
+    coverImageUrl: { type: String, default: null },
+
+    weight: {
+      type: Number,
+      min: [100, "Weight: cannot be less than 100 gram"],
+      required: [true, "Weight: cannot be empty"],
+    },
+    length: {
+      type: Number,
+      min: [10, "Length: cannot be less than 10 cm"],
+      require: [true, "length: cannot be empty"],
+    },
+    width: {
+      type: Number,
+      min: [1, "Width: cannot be less than 1 cm"],
+      required: [true, "Width: cannot be empty"],
+    },
+    height: {
+      type: Number,
+      min: [1, "Height: cannot be less than 1 cm"],
+      required: [true, "Height: cannot be empty"],
+    },
   },
   {
     versionKey: false,
@@ -24,7 +67,7 @@ const cartDetailSchema = new Schema(
 // Virtual with Populate
 cartDetailSchema.virtual("product", {
   ref: "products",
-  localField: "productId",
+  localField: "products",
   foreignField: "_id",
   justOne: true,
 });

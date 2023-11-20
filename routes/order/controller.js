@@ -24,6 +24,7 @@ module.exports = {
             "REJECTED",
           status: status,
           customerId: customerId,
+          isOnline: true,
         };
       } else {
         conditionFind = {
@@ -31,13 +32,14 @@ module.exports = {
             $in: ["PLACED", "PREPARING", "DELIVERING", "COMPLETED", "REJECTED"],
           },
           customerId: customerId,
+          isOnline: true,
         };
       }
 
       let results = await Order.find(conditionFind)
         .skip(skip)
         .limit(limit)
-        .sort({ createdDate: 1, status: 1, shippedDate: 1 })
+        .sort({ createdDate: -1, shippedDate: -1 })
         .lean();
 
       const total = await Order.countDocuments(conditionFind);
@@ -65,7 +67,7 @@ module.exports = {
       const { id } = req.params;
       const customerId = req.user._id;
 
-      let result = await Order.findOne({ _id: id, customerId: customerId });
+      let result = await Order.findOne({ _id: id, customerId: customerId, isOnline: true });
 
       if (result) {
         return res.status(200).json({
@@ -98,6 +100,8 @@ module.exports = {
       const createdDate = Date.now();
 
       const shippedDate = new Date(createdDate);
+      
+      // const totalFee = 20000;
 
       //Thực hiện tìm kiếm customer và kiểm tra có tồn tại hay không
       const getCustomer = Customer.findOne({
@@ -122,7 +126,6 @@ module.exports = {
       }
 
       let resultsProductList = [];
-      console.log('««««« productList »»»»»', productList);
       //Thực hiện kiểm tra sản phẩm có tồn tại và match với sản phẩm front end truyền lên
       await asyncForEach(productList, async (item) => {
         console.log('««««« item »»»»»', item);
@@ -144,6 +147,7 @@ module.exports = {
         return resultsProductList.push({
           productId: item.productId,
           quantity: item.quantity,
+          name: product.name,
           price: product.price,
           discount: product.discount,
           weight: product.weight * item.quantity,
@@ -161,13 +165,14 @@ module.exports = {
         });
       }
 
+      console.log('««««« totalFee »»»»»', totalFee);
       //Kiểm tra không có lỗi thực hiện tạo order mới với thông tin từ front end truyền vào
       const newRecord = new Order({
         createdDate,
         shippedDate,
         paymentType,
         customerId,
-        totalFee,
+        totalFee: totalFee,
         customer,
         productList: resultsProductList,
         isOnline: true,
@@ -203,6 +208,9 @@ module.exports = {
 
       const customerId = req.user._id;
 
+      // const totalFee = 20000;
+      // console.log('««««« totalFee »»»»»', totalFee);
+
       const createdDate = Date.now();
       const shippedDate = new Date(createdDate);
 
@@ -220,9 +228,10 @@ module.exports = {
       if(!customer.provinceCode || !customer.districtCode || !customer.wardCode ) errors.push("customer address: is note found");
 
       if(customer && customer.provinceCode === 203){
-        shippedDate.setDate(shippedDate.getDate() + 3);
+        // shippedDate.setDate(shippedDate.getDate() + 3);
+        shippedDate.setHours(shippedDate.getHours() + 3);
       }else{
-        shippedDate.setDate(shippedDate.getDate() + 5);
+        errors.push("provinceCode: is not valid");
       }
 
       let resultsProductList = [];
@@ -231,16 +240,17 @@ module.exports = {
         const product = await Product.findOne({
           _id: item.productId,
           isDeleted: false,
-        });
+        }).populate("media");
 
         if (!product) {
           errors.push(`Product ${item.productId} is not found`);
         } else {
           // Kiểm tra sản phẩm có tồn tại và số lượng trong giỏ hàng hợp lệ hay không
+          //Note: Việc kiểm tra số lượng truyền lên khớp với số lượng cart không sẽ dẫn tới phải thực hiện update trước khi tạo
           const isProductInCart = await Cart.exists({
             customerId: customerId,
             "products.productId": item.productId,
-            "products.quantity": item.quantity,
+            // "products.quantity": item.quantity,
           });
 
           if (!isProductInCart) {
@@ -257,12 +267,14 @@ module.exports = {
         return resultsProductList.push({
           productId: item.productId,
           quantity: item.quantity,
+          name: product.name,
           price: product.price,
           discount: product.discount,
           weight: product.weight * item.quantity,
           length: product.length * item.quantity,
           width: product.width * item.quantity,
           height: product.height * item.quantity,
+          imageProduct: product.media.coverImageUrl,
         });
       });
 
@@ -361,7 +373,7 @@ module.exports = {
   updateStatus: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { status } = req.query;
       const customerId = req.user._id;
 
       let validOrder = await Order.findOne({
@@ -390,6 +402,13 @@ module.exports = {
           { new: true }
         );
 
+        await asyncForEach(result.productList, async (item) => {
+          await Product.findOneAndUpdate(
+            { _id: item.productId },
+            { $inc: { stock: +item.quantity } }
+          );
+        });
+
         if (result) {
           return res.status(200).json({
             payload: result,
@@ -397,6 +416,7 @@ module.exports = {
           });
         }
       }
+      
 
       return res
         .status(410)

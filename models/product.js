@@ -23,12 +23,9 @@ const productSchema = new Schema(
       default: 0,
     },
     stock: { type: Number, min: 1, default: 1 },
-    images: {
-      type: Schema.Types.Mixed, // Sử dụng Schema.Types.Mixed để định nghĩa một mảng đối tượng (object).
-      default: null,
-    },
-    coverImageUrl: {
-      type: String,
+    imageId: {
+      type: Schema.Types.ObjectId,
+      ref: "medias",
       default: null,
     },
     weight: {
@@ -93,6 +90,14 @@ productSchema.virtual("category", {
 productSchema.virtual("supplier", {
   ref: "suppliers", // Tên model data tham chiếu
   localField: "supplierId", // Field trong data hiện tại đem đi tham chiếu
+  foreignField: "_id", // Field tham chiếu trong data tham chiếu
+  justOne: true, // Mỗi sản phẩm chỉ thuộc về một nhà cung cấp
+});
+
+// Tạo trường ảo "media" để tham chiếu đến nhà cung cấp sản phẩm
+productSchema.virtual("media", {
+  ref: "medias", // Tên model data tham chiếu
+  localField: "imageId", // Field trong data hiện tại đem đi tham chiếu
   foreignField: "_id", // Field tham chiếu trong data tham chiếu
   justOne: true, // Mỗi sản phẩm chỉ thuộc về một nhà cung cấp
 });

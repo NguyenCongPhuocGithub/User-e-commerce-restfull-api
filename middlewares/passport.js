@@ -69,9 +69,8 @@ const passportConfigBasic = new BasicStrategy(async (email, password, done) => {
             if(!user) return done(null, false);
 
             //Truyền password chưa mã hóa vào và thực hiện so sánh với password mã hóa trong mongodb theo SECRET
+            //Trả về true hoặc false
             const isCorrectPass = await user.isValidPass(password);
-
-            console.log('««««« isCorrectPass »»»»»', isCorrectPass);
 
             if(!isCorrectPass) return done(null, false);
 

@@ -9,6 +9,7 @@ module.exports = {
       })
         .populate("category")
         .populate("supplier")
+        .populate("media")
         .lean();
 
       if (results) {

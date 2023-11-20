@@ -1,4 +1,6 @@
 const { Customer, Cart } = require("../../models");
+const { findOne } = require("../../models/category");
+const { findById } = require("../../models/supplier");
 
 module.exports = {
 
@@ -84,20 +86,47 @@ module.exports = {
     try {
       const id = req.user._id
       const {
-        password,
+        passwordOld,
+        newPassword,
         confirmPassword,
       } = req.body;
 
-      if(confirmPassword !== password) {
-        return res.status(404).json({
-          message: "Change password information of customer password or confirmPassword not match",
+      let customer = await Customer.findOne({
+        _id: id,
+        isDeleted: false,
+      })
+      console.log('««««« customer »»»»»', customer);
+
+      let error = [];
+
+      const isCorrectPassOld = await customer.isValidPass(passwordOld);
+      const isCorrectPassNew = await customer.isValidPass(newPassword);
+
+      console.log('««««« isCorrectPassOld »»»»»', isCorrectPassOld);
+
+      if (!isCorrectPassOld) {
+        error.push("Change password information of customer password old does not match");
+      }
+
+      if(isCorrectPassNew) {
+         error.push("Change password information of customer newPassword match passwordOld");
+      }
+
+      if(newPassword !== confirmPassword) {
+         error.push("Change password information of customer confirmPassWord and newPassword not match");
+      }
+
+      if(error.length > 0) {
+          return res.status(404).json({
+          message: "Change password information of customer failed",
+          error: `${error}`,
         });
       }
 
       const updateCustomer = await Customer.findOneAndUpdate(
         { _id: id, isDeleted: false },
         {
-          password,
+          password: newPassword,
         },
         { new: true }
       );
