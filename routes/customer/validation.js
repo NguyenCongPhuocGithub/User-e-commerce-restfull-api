@@ -28,22 +28,19 @@ const customerSchema = yup.object({
         }
       ),
 
-    provinceCode: yup.number()
-    .required("provinceCode: Không thể bỏ trống"),
+    provinceCode: yup.number(),
 
     provinceName: yup
       .string()
       .max(50, "provinceName: cannot exceed 50 characters"),
 
-    districtCode: yup.number()
-    .required("districtCode: Không thể bỏ trống"),
+    districtCode: yup.number(),
 
     districtName: yup
       .string()
       .max(50, "districtName: cannot exceed 50 characters"),
 
-    wardCode: yup.string().max(500, "wardCode: cannot exceed 50 characters")
-    .required("wardCode: Không thể bỏ trống"),
+    wardCode: yup.string().max(500, "wardCode: cannot exceed 50 characters"),
 
     wardName: yup.string().max(500, "wardName: cannot exceed 50 characters"),
 
