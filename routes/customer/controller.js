@@ -95,25 +95,22 @@ module.exports = {
         _id: id,
         isDeleted: false,
       })
-      console.log('««««« customer »»»»»', customer);
 
       let error = [];
 
       const isCorrectPassOld = await customer.isValidPass(passwordOld);
       const isCorrectPassNew = await customer.isValidPass(newPassword);
 
-      console.log('««««« isCorrectPassOld »»»»»', isCorrectPassOld);
-
       if (!isCorrectPassOld) {
-        error.push("Change password information of customer password old does not match");
+        error.push("Mật khẩu cũ không đúng");
       }
 
       if(isCorrectPassNew) {
-         error.push("Change password information of customer newPassword match passwordOld");
+         error.push("Mật khẩu mới không trùng mật khẩu cũ");
       }
 
       if(newPassword !== confirmPassword) {
-         error.push("Change password information of customer confirmPassWord and newPassword not match");
+         error.push("Xác nhận mật khẩu không trùng mật khẩu mới");
       }
 
       if(error.length > 0) {

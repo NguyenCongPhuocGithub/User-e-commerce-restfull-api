@@ -76,9 +76,9 @@ module.exports = {
       ]);
 
       const errors = [];
-      if (foundEmail) errors.push("email: already exists");
+      if (foundEmail) errors.push("email đã tồn tại");
       // if (!isEmpty(foundEmail)) errors.push('Email đã tồn tại');
-      if (foundPhoneNumber) errors.push("phoneNumber :already exists");
+      if (foundPhoneNumber) errors.push("Số điện thoại đã tồn tại");
 
       if (errors.length > 0) {
         return res.status(404).json({
