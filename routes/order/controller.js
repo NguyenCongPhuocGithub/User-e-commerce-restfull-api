@@ -225,7 +225,7 @@ module.exports = {
       const errors = [];
       if (!customer) errors.push("customer: is note found");
 
-      if(!customer.provinceCode || !customer.districtCode || !customer.wardCode ) errors.push("customer address: is note found");
+      if(!customer.provinceCode || !customer.districtCode || !customer.wardCode ) errors.push("customer address: is not found");
 
       if(customer && customer.provinceCode === 203){
         // shippedDate.setDate(shippedDate.getDate() + 3);
@@ -260,7 +260,7 @@ module.exports = {
           }
 
           if (product.stock < item.quantity) {
-            errors.push(`Stock of product ${item.productId} is not enough`);
+            errors.push(`Số lượng sản phẩm ${item.name} đặt vượt mức, hiện tại có thể cung cấp là ${product.stock} sản phẩm`);
           }
         }
 

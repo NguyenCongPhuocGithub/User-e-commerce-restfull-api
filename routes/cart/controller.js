@@ -210,7 +210,7 @@ module.exports = {
         errors.push("product: does not exist");
 
       if (foundProduct && quantity > foundProduct.stock)
-        errors.push("quality: cannot be than stock product");
+        errors.push(`Số lượng đặt vượt mức, số lượng hiện tại có thể cung cấp là ${foundProduct.stock} sản phẩm`);
 
       if (errors.length > 0) {
         return res.status(404).json({
