@@ -15,6 +15,7 @@ const customersRouter = require('./routes/customer/router');
 const ordersRouter = require('./routes/order/router');
 const cartsRouter = require('./routes/cart/router');
 const filtersRouter = require('./routes/filter/router');
+const verificationRouter = require('./routes/verification/router');
 
 //import CONNECTION_STRING, DB_NAME
 const { CONNECTION_STRING, DB_NAME } = require('./constants/db');
@@ -51,10 +52,11 @@ passport.use(passportConfigBasic);
 
 
 app.use('/auth', authRouter);
+app.use('/verifications', verificationRouter)
 app.use('/products', productsRouter);
 app.use('/categories', categoriesRouter);
 app.use('/filters', filtersRouter);
-app.use('/customers', passport.authenticate('jwt', { session: false }), customersRouter);
+app.use('/customers', customersRouter);
 app.use('/orders', passport.authenticate('jwt', { session: false }), ordersRouter);
 app.use('/carts', passport.authenticate('jwt', { session: false }), cartsRouter);
 

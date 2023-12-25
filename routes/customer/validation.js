@@ -53,24 +53,32 @@ const changePasswordSchema = yup.object({
     passwordOld: yup
       .string()
       .required("passwordOld: cannot be blank")
-      .test("passwordOld type", "password: is not a valid password!", (value) => {
-        const passwordRegex =
-          /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+      .test(
+        "passwordOld type",
+        "password: is not a valid password!",
+        (value) => {
+          const passwordRegex =
+            /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
-        return passwordRegex.test(value);
-      })
+          return passwordRegex.test(value);
+        }
+      )
       .min(8)
       .max(20),
 
     newPassword: yup
       .string()
       .required("newPassword: cannot be blank")
-      .test("newPassword type", "password: is not a valid password!", (value) => {
-        const passwordRegex =
-          /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+      .test(
+        "newPassword type",
+        "newPassword: is not a valid password!",
+        (value) => {
+          const passwordRegex =
+            /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
-        return passwordRegex.test(value);
-      })
+          return passwordRegex.test(value);
+        }
+      )
       .min(8)
       .max(20),
 
@@ -92,7 +100,52 @@ const changePasswordSchema = yup.object({
   }),
 });
 
+const forgotPasswordSchema = yup.object({
+  body: yup.object({
+    newPassword: yup
+      .string()
+      .test(
+        "newPassword type",
+        "newPassword: is not a valid password!",
+        (value) => {
+          if(!value) return true
+          const passwordRegex =
+            /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+          return passwordRegex.test(value);
+        }
+      )
+      .min(8)
+      .max(20),
+
+    confirmPassword: yup
+      .string()
+      .test(
+        "confirmPassword type",
+        "confirmPassword: is not a valid password!",
+        (value) => {
+          if(!value) return true
+          const passwordRegex =
+            /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+          return passwordRegex.test(value);
+        }
+      )
+      .min(8)
+      .max(20),
+  }),
+
+  // email: yup
+  // .string()
+  // .required("email: cannot be blank")
+  // .test("email type", "email: is not a valid email!", (value) => {
+  //   const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+  //   return emailRegex.test(value);
+  // }),
+
+  confirmVerificationCode: yup.number(),
+});
+
 module.exports = {
   customerSchema,
   changePasswordSchema,
+  forgotPasswordSchema,
 };

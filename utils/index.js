@@ -2,6 +2,7 @@ const yup = require("yup");
 const fs = require("fs");
 const ObjectId = require("mongodb").ObjectId;
 
+
 module.exports = {
   // Thực thi việc xác thực với cấu trúc chia nhánh body, query, params
   validateSchema: (schema) => async (req, res, next) => {
@@ -45,7 +46,7 @@ module.exports = {
     return new RegExp(regex, "gi");
   },
 
-  // Function thực thi loop giá trị thay vì map và forEach thì fuzzySearch loại bỏ giá trị trả về array và xác định index trả về theo thứ tự 
+  // Function thực thi loop giá trị thay vì map và forEach thì fuzzySearch loại bỏ giá trị trả về array và xác định index trả về theo thứ tự
   asyncForEach: async (array, callback) => {
     for (let index = 0; index < array.length; index += 1) {
       //callBack function được gọi lại mỗi lần theo số index và trả đối số về theo index
@@ -54,4 +55,3 @@ module.exports = {
     }
   },
 };
-

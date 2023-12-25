@@ -47,7 +47,7 @@ const employeeSchema = new Schema(
       maxLength: [20, "Password: cannot exceed 20 characters"],
     },
     birthday: {
-      type: String,
+      type: Date,
     },
     phoneNumber: {
       type: String,
