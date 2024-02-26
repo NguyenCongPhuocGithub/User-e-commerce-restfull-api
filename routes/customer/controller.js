@@ -1,9 +1,4 @@
 const { Customer, Cart } = require("../../models");
-const { sendVerificationCode } = require("../../utils/jwtHelper");
-
-//Lưu verificationCode
-let verificationCode;
-let verificationCodeExpiration;
 
 module.exports = {
   getDetail: async (req, res, next) => {

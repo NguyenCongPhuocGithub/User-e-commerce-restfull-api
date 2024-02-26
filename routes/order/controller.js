@@ -3,7 +3,7 @@ const { asyncForEach } = require("../../utils");
 
 module.exports = {
   //Build code get list theo page, pageSize, status truyền lên từ front end
-  //status tìm "PLACED" || "PREPARING" || "DELIVERING" || "COMPLETED" || "REJECTED" 
+  //status tìm "PLACED" || "PREPARING" || "DELIVERING" || "COMPLETED" || "REJECTED"
   getList: async (req, res, next) => {
     try {
       const { page, pageSize, status } = req.query;
@@ -61,13 +61,17 @@ module.exports = {
         .json({ message: "Get list information of order failed", error });
     }
   },
-  
+
   getDetail: async (req, res, next) => {
     try {
       const { id } = req.params;
       const customerId = req.user._id;
 
-      let result = await Order.findOne({ _id: id, customerId: customerId, isOnline: true });
+      let result = await Order.findOne({
+        _id: id,
+        customerId: customerId,
+        isOnline: true,
+      });
 
       if (result) {
         return res.status(200).json({
@@ -100,15 +104,16 @@ module.exports = {
       const createdDate = Date.now();
 
       const shippedDate = new Date(createdDate);
-      
+
       // const totalFee = 20000;
 
       //Thực hiện tìm kiếm customer và kiểm tra có tồn tại hay không
       const getCustomer = Customer.findOne({
         _id: customerId,
         isDeleted: false,
-      })
-      .select("-password -countCancellations -isDeleted -createdAt -updatedAt");
+      }).select(
+        "-password -countCancellations -isDeleted -createdAt -updatedAt"
+      );
 
       const [customer] = await Promise.all([getCustomer]);
 
@@ -116,19 +121,23 @@ module.exports = {
       if (!customer) errors.push("customer: is note found");
 
       //Thực hiện kiểm trả customer phải có provinceCode, districtCode, wardCode thiếu một trong ba giá trị này không cho order
-      if(!customer.provinceCode || !customer.districtCode || !customer.wardCode ) errors.push("customer address: is not found");
+      if (
+        !customer.provinceCode ||
+        !customer.districtCode ||
+        !customer.wardCode
+      )
+        errors.push("customer address: is not found");
 
       //Thực hiện kiểm tra vị trí của customer có nằm trong Đà Nẵng không, có thời gian dự kiến ship trong ba ngày, ngược lại trong ship trong năm ngày
-      if(customer && customer.provinceCode === 203){
+      if (customer && customer.provinceCode === 203) {
         shippedDate.setDate(shippedDate.getDate() + 3);
-      }else{
+      } else {
         shippedDate.setDate(shippedDate.getDate() + 5);
       }
 
       let resultsProductList = [];
       //Thực hiện kiểm tra sản phẩm có tồn tại và match với sản phẩm front end truyền lên
       await asyncForEach(productList, async (item) => {
-        console.log('««««« item »»»»»', item);
         const product = await Product.findOne({
           _id: item.productId,
           isDeleted: false,
@@ -165,7 +174,6 @@ module.exports = {
         });
       }
 
-      console.log('««««« totalFee »»»»»', totalFee);
       //Kiểm tra không có lỗi thực hiện tạo order mới với thông tin từ front end truyền vào
       const newRecord = new Order({
         createdDate,
@@ -200,8 +208,8 @@ module.exports = {
     }
   },
 
-//Build create Order online theo luồng đặt ngay một sản phẩm
-//Note: luồng tương tự với đặt ngay một sản phẩm, chỉ thêm luồng đã được command ở bên dưới
+  //Build create Order online theo luồng đặt ngay một sản phẩm
+  //Note: luồng tương tự với đặt ngay một sản phẩm, chỉ thêm luồng đã được command ở bên dưới
   createFromCart: async (req, res, next) => {
     try {
       const { paymentType, productList, totalFee } = req.body;
@@ -217,20 +225,26 @@ module.exports = {
       const getCustomer = Customer.findOne({
         _id: customerId,
         isDeleted: false,
-      })
-      .select("-password -countCancellations -isDeleted -createdAt -updatedAt");
+      }).select(
+        "-password -countCancellations -isDeleted -createdAt -updatedAt"
+      );
 
       const [customer] = await Promise.all([getCustomer]);
 
       const errors = [];
       if (!customer) errors.push("customer: is note found");
 
-      if(!customer.provinceCode || !customer.districtCode || !customer.wardCode ) errors.push("customer address: is not found");
+      if (
+        !customer.provinceCode ||
+        !customer.districtCode ||
+        !customer.wardCode
+      )
+        errors.push("customer address: is not found");
 
-      if(customer && customer.provinceCode === 203){
+      if (customer && customer.provinceCode === 203) {
         // shippedDate.setDate(shippedDate.getDate() + 3);
         shippedDate.setHours(shippedDate.getHours() + 3);
-      }else{
+      } else {
         errors.push("provinceCode: is not valid");
       }
 
@@ -260,7 +274,9 @@ module.exports = {
           }
 
           if (product.stock < item.quantity) {
-            errors.push(`Số lượng sản phẩm ${item.name} đặt vượt mức, hiện tại có thể cung cấp là ${product.stock} sản phẩm`);
+            errors.push(
+              `Số lượng sản phẩm ${item.name} đặt vượt mức, hiện tại có thể cung cấp là ${product.stock} sản phẩm`
+            );
           }
         }
 
@@ -350,10 +366,9 @@ module.exports = {
       // Trả về array products trong cart sau khi check và xóa
       await asyncForEach(results.productList, async (item) => {
         // Tìm và xóa sản phẩm khỏi giỏ hàng
-        cart.products = cart.products.filter(
-          (cartItem) =>
-            cartItem.productId.toString() !== item.productId.toString()
-        );
+        cart.products = cart.products.filter((cartItem) => {
+          return cartItem.productId.toString() !== item.productId.toString();
+        });
       });
 
       //Thực hiện lưu lại giá trị mới sản phẩm không được đặt vào cart
@@ -416,7 +431,6 @@ module.exports = {
           });
         }
       }
-      
 
       return res
         .status(410)
@@ -424,7 +438,10 @@ module.exports = {
     } catch (err) {
       return res
         .status(404)
-        .json({ message: "Update status information of order failed", error: err });
+        .json({
+          message: "Update status information of order failed",
+          error: err,
+        });
     }
   },
 };

@@ -50,7 +50,11 @@ module.exports = {
   asyncForEach: async (array, callback) => {
     for (let index = 0; index < array.length; index += 1) {
       //callBack function được gọi lại mỗi lần theo số index và trả đối số về theo index
+      //Note: không thực hiện return sẽ làm kết thúc loop khi mới loop item đầu
       //Note: tại nơi gọi function asyncForEach sẽ nhận đối số trước và function callback sẽ loop lần lược
+
+      // Note: hiểu một cách đơn giản hơn là callback function sẽ nhận đối số là array[index]
+      // và callback function tại nơi gọi function asyncForEach sẽ nhận lại tham số tham trị từ array[index] và chờ xử lý xong thì for mới tiếp tực loop
       await callback(array[index], index, array);
     }
   },
