@@ -140,9 +140,8 @@ async function hashPassword(value) {
   if (value) {
     const salt = await bcrypt.genSalt(10); // 10 kí tự: ABCDEFGHIK + 123456
     const hashedPassword = await bcrypt.hash(value, salt);
-
+    
     return hashedPassword;
-
   }
 }
 // End mã hóa field

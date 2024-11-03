@@ -148,7 +148,7 @@ module.exports = {
         } else {
           //Nếu có thực hiện số lượng sản phẩm phải ít hơn số lượng tồn kho
           if (product.stock < item.quantity) {
-            return errors.push(`Stock product${item.productId} is not enough`);
+            errors.push(`Stock product${item.productId} is not enough`);
           }
         }
 
@@ -365,11 +365,24 @@ module.exports = {
 
       // Trả về array products trong cart sau khi check và xóa
       await asyncForEach(results.productList, async (item) => {
-        // Tìm và xóa sản phẩm khỏi giỏ hàng
-        cart.products = cart.products.filter((cartItem) => {
-          return cartItem.productId.toString() !== item.productId.toString();
+        cart.products = cart.products.map((cartItem) => {
+            if (cartItem.productId.toString() === item.productId.toString() && cartItem.quantity === item.quantity) {
+                // Loại bỏ sản phẩm khỏi giỏ hàng nếu trùng productId và quantity
+                return null;
+            } else if (cartItem.productId.toString() === item.productId.toString() && cartItem.quantity !== item.quantity) {
+                // Giảm số lượng sản phẩm nếu trùng productId nhưng khác quantity
+                return {
+                    ...cartItem,
+                    quantity: cartItem.quantity - item.quantity
+                };
+            } else {
+                return cartItem;
+            }
         });
-      });
+    
+        // Loại bỏ các sản phẩm null (cần bị xóa) khỏi giỏ hàng
+        cart.products = cart.products.filter((cartItem) => cartItem !== null);
+    });
 
       //Thực hiện lưu lại giá trị mới sản phẩm không được đặt vào cart
       await cart.save();

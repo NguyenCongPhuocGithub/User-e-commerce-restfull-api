@@ -119,13 +119,18 @@ module.exports = {
         });
       }
 
-      const updateCustomer = await Customer.findOneAndUpdate(
-        { _id: id, isDeleted: false },
-        {
-          password: newPassword,
-        },
-        { new: true }
-      );
+      // const updateCustomer = await Customer.findOneAndUpdate(
+      //   { _id: id, isDeleted: false },
+      //   { password: newPassword },
+      //   { new: true },
+      //   );
+
+      const findCustomer = await Customer.findOne({ _id: id, isDeleted: false });
+
+      if(findCustomer){
+        findCustomer.password = newPassword;
+        await findCustomer.save();
+      }
 
       if (updateCustomer) {
         return res.status(200).json({
@@ -138,7 +143,7 @@ module.exports = {
         .status(410)
         .json({ message: "Change password information of customer not found" });
     } catch (err) {
-      return res.send(404, {
+      return res.status(400).json({
         message: "Change password information of customer failed",
         error: err,
       });
@@ -195,9 +200,7 @@ module.exports = {
         });
       }
 
-      return res
-        .status(410)
-        .json({ message: "Thay đổi thông tin mật khẩu không tìm thấy" });
+      return res.status(410).json({ message: "Thay đổi thông tin mật khẩu không tìm thấy" });
     } catch (error) {
       return res.send(404, {
         message: "Thay đổi thông tin mật khẩu thất bại",

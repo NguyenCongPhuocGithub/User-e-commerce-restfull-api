@@ -260,7 +260,6 @@ module.exports = {
           if (productId.toString() === product.productId.toString()) {
             product.quantity = nextQuantity;
           }
-
           return product;
         });
       }
