@@ -420,7 +420,7 @@ module.exports = {
         await asyncForEach(result.productList, async (item) => {
           await Product.findOneAndUpdate(
             { _id: item.productId },
-            { $inc: { stock: +item.quantity } }
+            { $inc: { stock: + item.quantity } }
           );
         });
 

@@ -15,22 +15,22 @@ module.exports = {
 
       const getEmailExits = await Customer.findOne({ email });
       const getPhoneExits = Customer.findOne({ phoneNumber });
-      
+
       const errors = [];
       const [foundEmail, foundPhoneNumber] = await Promise.all([
         getEmailExits,
         getPhoneExits,
       ]);
 
-      if(typeAPI === "Register"){
+      if (typeAPI === "Register") {
         if (foundEmail) errors.push("Email đã tồn tại");
         if (foundPhoneNumber) errors.push("Số điện thoại đã tồn tại");
       }
 
-      if(typeAPI === "ForgotPassword"){
+      if (typeAPI === "ForgotPassword") {
         if (!foundEmail) errors.push("Email không tồn tại trong hệ thống");
       }
-    
+
       if (errors.length > 0) {
         return res.status(404).json({
           message: "Xác nhận mã gmail không hợp lệ",
@@ -47,10 +47,10 @@ module.exports = {
         return res.status(201).json({
           message: "Gửi mã xác thực thành công",
           payload: verificationCode,
-          typeAPI
+          typeAPI,
         });
       } else {
-        // Tạo thời gian duy trì cho mã 5p
+        // Tạo thời gian hiện tại để so sánh
         const currentTime = new Date();
         // Kiểm tra verificationCode đã hết hạn chưa
         if (currentTime > expirationTime) {
@@ -58,7 +58,7 @@ module.exports = {
             message: "Mã xác thực không hợp lệ",
             error: "Mã xác thực hết hạn",
             expirationTime: expirationTime,
-            typeAPI
+            typeAPI,
           });
         }
         if (confirmVerificationCode != verificationCode) {
@@ -73,7 +73,7 @@ module.exports = {
 
       return res.status(200).json({
         message: "Xác thực gmail thành công",
-        typeAPI
+        typeAPI,
       });
     } catch (error) {
       return res.status(404).json({
